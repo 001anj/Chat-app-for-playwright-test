@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  chat-app-db:
+    image: 'postgres:14'
+    env_file:
+      - .env
+    volumes:
+      - chat-app-db-data:/var/lib/postgresql/data
+    ports:
+      - '5477:5432'
+    networks:
+      - chat-app-net
+
+networks:
+  chat-app-net:
+
+volumes:
+  chat-app-db-data:
