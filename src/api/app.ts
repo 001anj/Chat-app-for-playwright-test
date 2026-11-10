@@ -18,12 +18,11 @@ const app = createExpressServer({
       return;
     }
 
-    const tokenPayload = jwt.verify(token, authConfig.accessTokenSecret);
-    if (!tokenPayload) {
+    try {
+      return jwt.verify(token, authConfig.accessTokenSecret);
+    } catch {
       return;
     }
-
-    return tokenPayload;
   },
   validation: true,
   classTransformer: true,

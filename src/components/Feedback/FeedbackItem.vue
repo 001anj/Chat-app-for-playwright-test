@@ -14,12 +14,15 @@ const { feedbackItem } = toRefs(props);
     <div class="flex items-center justify-center bg-gray-50 rounded-md p-4 shadow-inner">
       <div class="w-1/2 text-center">
         <img
+          data-test-id="feedback-item-author-avatar"
           class="h-8 w-8 inline-block rounded-full"
           loading="lazy"
           :src="`https://avatars.dicebear.com/api/initials/${feedbackItem?.author?.username}.svg`"
           alt=""
         />
-        <div class="text-xs mt-2 text-gray-600 line-clamp-1">{{ feedbackItem?.author?.username }}</div>
+        <div class="text-xs mt-2 text-gray-600 line-clamp-1" data-test-id="feedback-item-author">
+          {{ feedbackItem?.author?.username }}
+        </div>
       </div>
 
       <svg
@@ -35,19 +38,22 @@ const { feedbackItem } = toRefs(props);
 
       <div class="w-1/2 text-center">
         <img
+          data-test-id="feedback-item-receiver-avatar"
           class="h-8 w-8 inline-block rounded-full"
           loading="lazy"
           :src="`https://avatars.dicebear.com/api/initials/${feedbackItem?.receiver?.username}.svg`"
           alt=""
         />
-        <div class="text-xs mt-2 text-gray-600 line-clamp-1">{{ feedbackItem?.receiver?.username }}</div>
+        <div class="text-xs mt-2 text-gray-600 line-clamp-1" data-test-id="feedback-item-receiver">
+          {{ feedbackItem?.receiver?.username }}
+        </div>
       </div>
     </div>
 
     <div class="mt-8">
-      <h3 class="font-bold text-sm" v-html="feedbackItem?.title" />
+      <h3 class="font-bold text-sm" data-test-id="feedback-item-title" v-html="feedbackItem?.title" />
 
-      <section class="prose-sm max-w-full mt-4" v-html="feedbackItem?.body" />
+      <section class="prose-sm max-w-full mt-4" data-test-id="feedback-item-body" v-html="feedbackItem?.body" />
     </div>
   </div>
 </template>

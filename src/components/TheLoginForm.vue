@@ -48,6 +48,7 @@ async function onSubmit() {
           autocomplete="username"
           required
           class="w-full border-gray-300 rounded-md"
+          data-test-id="sign-in-username-input"
           v-model="form.username"
         />
       </div>
@@ -63,15 +64,25 @@ async function onSubmit() {
           autocomplete="current-password"
           required
           class="w-full border-gray-300 rounded-md"
+          data-test-id="sign-in-password-input"
           v-model="form.password"
         />
       </div>
     </div>
 
-    <div v-if="hasError" class="text-red-400 text-center text-sm">Wrong username or password</div>
+    <div v-if="hasError" class="text-red-400 text-center text-sm" data-test-id="sign-in-error-message">
+      Wrong username or password
+    </div>
 
     <div>
-      <BaseButton class="w-full" type="submit" :is-loading="isLoading"> Sign in </BaseButton>
+      <BaseButton
+        class="w-full"
+        type="submit"
+        data-test-id="sign-in-submit-button"
+        :is-loading="isLoading"
+      >
+        Sign in
+      </BaseButton>
     </div>
   </form>
 </template>

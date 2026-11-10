@@ -39,16 +39,17 @@ onMounted(() => {
 <template>
   <div data-test-id="feedback-wall-page">
     <div class="flex justify-between items-center mb-8 pb-8 border-b border-gray-100">
-      <h1 class="text-2xl">Feedback Wall</h1>
+      <h1 class="text-2xl" data-test-id="feedback-wall-heading">Feedback Wall</h1>
 
       <div class="flex items-center justify-center space-x-4">
-        <a href="#" title="Toggle Fullscreen" @click.prevent="toggle">
+        <a href="#" title="Toggle Fullscreen" data-test-id="feedback-wall-fullscreen-toggle" @click.prevent="toggle">
           <IconFullscreen />
         </a>
 
         <button
           type="button"
           class="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          data-test-id="feedback-wall-create-new-button"
           @click="isCreateModalOpen = true"
         >
           Create New
@@ -62,7 +63,7 @@ onMounted(() => {
       <IconLoading />
     </div>
 
-    <div v-else-if="!feedbackStore.feedback.length" class="text-center text-gray-400">
+    <div v-else-if="!feedbackStore.feedback.length" class="text-center text-gray-400" data-test-id="feedback-wall-empty-state">
       Be the first to give feedback!
     </div>
 
@@ -100,6 +101,7 @@ onMounted(() => {
             >
               <div
                 class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
+                data-test-id="feedback-create-dialog"
               >
                 <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900"> Create Feedback </DialogTitle>
 
@@ -114,8 +116,6 @@ onMounted(() => {
             </TransitionChild>
           </div>
         </div>
-
-        <TheFeedbackCreateForm />
       </Dialog>
     </TransitionRoot>
   </div>

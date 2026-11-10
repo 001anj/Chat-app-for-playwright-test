@@ -18,11 +18,13 @@ export const useAuthStore = defineStore({
     async init(token = "") {
       if (this.isLoggedIn) return;
 
-      try {
-        if (!token) {
-          token = localStorage.getItem(TOKEN_NAME) ?? "";
-        }
+      if (!token) {
+        token = localStorage.getItem(TOKEN_NAME) ?? "";
+      }
 
+      if (!token) return;
+
+      try {
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
         const response = await api.get("/auth/me");
@@ -35,7 +37,14 @@ export const useAuthStore = defineStore({
 
         localStorage.setItem(TOKEN_NAME, token);
       } catch {
-        this.logout();
+        // Reset state without navigating: init() runs inside the router's beforeEach
+        // guard, which pushing a navigation from here would race against.
+        localStorage.removeItem(TOKEN_NAME);
+        delete api.defaults.headers.common["Authorization"];
+        this.currentUser = {
+          id: undefined,
+          username: undefined,
+        };
       }
     },
 

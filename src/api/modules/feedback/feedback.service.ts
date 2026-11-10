@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { NotFoundError } from "routing-controllers";
 
 import { prisma } from "./../../utils/db";
 
@@ -20,7 +21,12 @@ export class FeedbackService {
     });
   }
 
-  static createOne(input: FeedbackCreateDto, tokenPayload: AccessTokenPayload) {
+  static async createOne(input: FeedbackCreateDto, tokenPayload: AccessTokenPayload) {
+    const receiver = await prisma.user.findUnique({ where: { id: input.receiverId } });
+    if (!receiver) {
+      throw new NotFoundError("Receiver not found");
+    }
+
     return prisma.feedback.create({
       data: {
         title: sanitizeHtml(input.title, { allowedTags: [] }),

@@ -66,7 +66,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <form class="space-y-6" data-test-id="login" @submit.prevent="onSubmit">
+  <form class="space-y-6" @submit.prevent="onSubmit">
     <div>
       <label for="title" class="block text-sm font-medium text-gray-700"> Title </label>
       <div class="mt-1">
@@ -77,6 +77,7 @@ onBeforeMount(() => {
           autocomplete="off"
           required
           class="w-full border-gray-300 rounded-md"
+          data-test-id="feedback-create-title-input"
           v-model="form.title"
         />
       </div>
@@ -91,6 +92,7 @@ onBeforeMount(() => {
           autocomplete="off"
           required
           class="w-full border-gray-300 rounded-md"
+          data-test-id="feedback-create-comment-input"
           v-model="form.body"
         />
       </div>
@@ -99,7 +101,12 @@ onBeforeMount(() => {
     <hr class="my-4" />
 
     <div>
-      <select class="w-full rounded-md border-gray-300" required v-model="form.receiverId">
+      <select
+        class="w-full rounded-md border-gray-300"
+        required
+        data-test-id="feedback-create-receiver-select"
+        v-model="form.receiverId"
+      >
         <option value="" disabled>Select the receiver</option>
         <option v-for="talent in talents" :key="talent.id" :value="talent.id" :selected="form.receiverId === talent.id">
           {{ talent.username }}
@@ -112,7 +119,9 @@ onBeforeMount(() => {
     <div v-if="hasError" class="text-red-400 text-center text-sm mb-4">Please make sure that all fields are filled</div>
 
     <div>
-      <BaseButton class="w-full" type="submit" :is-loading="isLoading"> Submit </BaseButton>
+      <BaseButton class="w-full" type="submit" data-test-id="feedback-create-submit-button" :is-loading="isLoading">
+        Submit
+      </BaseButton>
     </div>
   </form>
 </template>

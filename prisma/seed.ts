@@ -7,6 +7,12 @@ const prisma = new PrismaClient();
 const seedPassword = "!password123";
 
 async function main() {
+  // cleanup
+  await prisma.feedback.deleteMany();
+  await prisma.user.deleteMany({
+    where: { username: { notIn: ["admin", "jane"] } },
+  });
+
   await prisma.user.upsert({
     where: { username: "admin" },
     update: {},
@@ -25,45 +31,9 @@ async function main() {
     },
   });
 
-  await prisma.user.upsert({
-    where: { username: "john" },
-    update: {},
-    create: {
-      username: "john",
-      password: await hash(seedPassword, 12),
-    },
-  });
-
-  await prisma.user.upsert({
-    where: { username: "tim" },
-    update: {},
-    create: {
-      username: "tim",
-      password: await hash(seedPassword, 12),
-    },
-  });
-
-  await prisma.user.upsert({
-    where: { username: "lea" },
-    update: {},
-    create: {
-      username: "lea",
-      password: await hash(seedPassword, 12),
-    },
-  });
-
-  // cleanup
-  await prisma.feedback.deleteMany();
-
   const feedbackTargets = [
     { author: "admin", receiver: "jane" },
-    { author: "tim", receiver: "admin" },
-    { author: "jane", receiver: "john" },
-    { author: "lea", receiver: "admin" },
-    { author: "lea", receiver: "tim" },
-    { author: "lea", receiver: "jane" },
-    { author: "john", receiver: "admin" },
-    { author: "admin", receiver: "jane" },
+    { author: "jane", receiver: "admin" },
   ];
 
   for (const target of shuffleArray(feedbackTargets)) {

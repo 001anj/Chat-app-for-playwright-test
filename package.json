@@ -11,7 +11,12 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "lint:fix": "eslint --fix . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "e2e-test": "playwright test tests/e2e-tests/specs",
+    "e2e-ui": "playwright test tests/e2e-tests/specs --ui",
+    "api-test-ui": "playwright test --project=api --ui",
+    "api-test": "playwright test --project=api",
+    "api-test:docker": "docker compose run --rm test-runner"
   },
   "prisma": {
     "seed": "node -r esbuild-runner/register prisma/seed.ts"
@@ -19,6 +24,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.5.0",
     "@heroicons/vue": "^1.0.6",
+    "@playwright/cli": "^0.1.24",
     "@prisma/client": "^3.12.0",
     "@vueuse/core": "^8.2.4",
     "axios": "^0.26.1",
@@ -27,7 +33,6 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.4",
@@ -42,6 +47,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^6.1.2",
+    "@playwright/test": "^1.65.0",
     "@rushstack/eslint-patch": "^1.1.0",
     "@tailwindcss/forms": "^0.5.0",
     "@tailwindcss/line-clamp": "^0.3.1",
@@ -59,6 +65,7 @@
     "@vue/tsconfig": "^0.1.3",
     "autoprefixer": "^10.4.4",
     "concurrently": "^7.1.0",
+    "dotenv": "^18.0.10",
     "esbuild": "^0.14.30",
     "esbuild-runner": "^2.2.1",
     "eslint": "^8.5.0",

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsInt, IsNotEmpty, IsString, Length } from "class-validator";
 
 export class FeedbackCreateDto {
   @IsNotEmpty()
@@ -12,6 +12,6 @@ export class FeedbackCreateDto {
   body: string;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   receiverId!: number;
 }

@@ -21,7 +21,13 @@ const authStore = useAuthStore();
           </div>
 
           <div v-if="authStore.isLoggedIn" class="flex space-x-4 items-center">
-            <a href="#" class="text-sm hover:underline focus:underline" @click.prevent="authStore.logout">sign out</a>
+            <a
+              href="#"
+              class="text-sm hover:underline focus:underline"
+              data-test-id="sign-out-link"
+              @click.prevent="authStore.logout"
+              >sign out</a
+            >
             <img
               class="h-10 w-10 rounded-full"
               loading="lazy"
