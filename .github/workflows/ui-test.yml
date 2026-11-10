@@ -1,0 +1,70 @@
+name: UI Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: db_user
+          POSTGRES_PASSWORD: db_pwd123
+          POSTGRES_DB: leapsome
+        ports:
+          - 5477:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://db_user:db_pwd123@localhost:5477/leapsome?schema=public
+      ACCESS_TOKEN_SECRET: ci-ui-test-secret
+      SERVICE_PORT: 3022
+      VITE_API_BASE_URL: http://localhost:3022
+      JUNIT_OUTPUT_FILE: ui-results.xml
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+        cache: npm
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    - name: Run database migrations
+      run: npx prisma migrate deploy
+    - name: Start dev server
+      run: |
+        npm run dev > dev-server.log 2>&1 &
+        timeout 60 bash -c 'until curl -s -o /dev/null http://localhost:3022/auth/users; do sleep 1; done'
+        timeout 60 bash -c 'until curl -s -o /dev/null http://localhost:5173/; do sleep 1; done'
+    - name: Run UI tests
+      run: npm run e2e-test
+    - name: Publish E2E JUnit test results
+      uses: dorny/test-reporter@v2
+      if: always()
+      with:
+        name: "Playwright E2E Tests"
+        path: "ui-results.xml"
+        reporter: java-junit
+        fail-on-error: "true"
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: ui-test-results
+        path: |
+          ui-results.xml
+          test-results/
+          dev-server.log
+        retention-days: 30
