@@ -1,7 +1,5 @@
 name: UI Tests
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
@@ -33,6 +31,12 @@ jobs:
       SERVICE_PORT: 3022
       VITE_API_BASE_URL: http://localhost:3022
       JUNIT_OUTPUT_FILE: ui-results.xml
+      # Forces the public npm registry and disables auth, overriding any pre-existing
+      # .npmrc on the runner (env vars win over every .npmrc precedence level in npm).
+      NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+      NPM_CONFIG_ALWAYS_AUTH: "false"
+      NODE_AUTH_TOKEN: ""
+      NPM_TOKEN: ""
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
