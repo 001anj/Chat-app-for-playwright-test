@@ -1,24 +1,23 @@
 name: API Tests
 on:
   push:
-    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 jobs:
   test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      contents: read
     services:
       postgres:
         image: postgres:14
         env:
           POSTGRES_USER: db_user
           POSTGRES_PASSWORD: db_pwd123
-          POSTGRES_DB: leapsome
         ports:
           - 5477:5432
         options: >-
@@ -27,41 +26,44 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      NODE_ENV: test
+      NODE_ENV: development
       DATABASE_URL: postgresql://db_user:db_pwd123@localhost:5477/leapsome?schema=public
-      ACCESS_TOKEN_SECRET: ci-api-test-secret
+      ACCESS_TOKEN_SECRET: 123
       SERVICE_PORT: 3022
-      JUNIT_OUTPUT_FILE: api-results.xml
+      VITE_API_BASE_URL: http://localhost:3022
+      API_BASE_URL: http://localhost:3022
+      JUNIT_OUTPUT_FILE: results-api.xml
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-        cache: npm
     - name: Install dependencies
-      run: npm ci
+      run: npm ci --legacy-peer-deps
+    - name: Generate Prisma client
+      run: npx prisma generate
     - name: Run database migrations
       run: npx prisma migrate deploy
     - name: Start API server
-      run: |
-        npm run dev:service > api-server.log 2>&1 &
-        timeout 60 bash -c 'until curl -s -o /dev/null http://localhost:3022/auth/users; do sleep 1; done'
+      run: nohup npm run dev:service > /tmp/api-server.log 2>&1 &
+    - name: Wait for API server to be ready
+      run: npx wait-on tcp:localhost:3022 -t 30000
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
     - name: Run API tests
       run: npm run api-test
+    - name: Upload API server logs
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-server-logs
+        path: /tmp/api-server.log
+        retention-days: 30
     - name: Publish API JUnit test results
       uses: dorny/test-reporter@v2
       if: always()
       with:
         name: "Playwright API Tests"
-        path: "api-results.xml"
-        reporter: java-junit
+        path: "results-api.xml"
+        reporter: jest-junit
         fail-on-error: "true"
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: api-test-results
-        path: |
-          api-results.xml
-          test-results/
-          api-server.log
-        retention-days: 30
