@@ -30,12 +30,6 @@ jobs:
       ACCESS_TOKEN_SECRET: ci-api-test-secret
       SERVICE_PORT: 3022
       JUNIT_OUTPUT_FILE: api-results.xml
-      # Forces the public npm registry and disables auth, overriding any pre-existing
-      # .npmrc on the runner (env vars win over every .npmrc precedence level in npm).
-      NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
-      NPM_CONFIG_ALWAYS_AUTH: "false"
-      NODE_AUTH_TOKEN: ""
-      NPM_TOKEN: ""
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -43,7 +37,7 @@ jobs:
         node-version: lts/*
         cache: npm
     - name: Install dependencies
-      run: npm ci
+      run: npm ci --legacy-peer-deps
     - name: Run database migrations
       run: npx prisma migrate deploy
     - name: Start API server
